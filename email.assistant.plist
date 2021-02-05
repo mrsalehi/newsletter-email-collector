@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
+<plist version="1.0">
+  <dict>
+    <key>EnvironmentVariables</key>
+    <dict>
+      <key>PATH</key>
+      <string>/Users/mrezasalehi/.virtualenvs/base/bin:/Users/mrezasalehi/.autojump/bin:/Library/Frameworks/Python.framework/V>
+    </dict>
+    <key>Label</key>
+    <string>email.assistant</string>
+    <key>ProgramArguments</key>
+    <array>
+    <string>/Users/mrezasalehi/.virtualenvs/base/bin/python</string>
+    <string>/Users/mrezasalehi/Desktop/email-assistant/email_assistant.py</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StartInterval</key>
+    <integer>1800</integer>
+    <key>StandardOutPath</key>
+    <string>/tmp/email.assistant.stdout</string>
+    <key>StandardErrorPath</key>
+    <string>tmp/email.assistant.stderr</string>
+    <key>UserName</key>
+    <string>mrezasalehi</string>
+    <key>InitGroups</key>
+    <true/>
+  </dict>
+</plist

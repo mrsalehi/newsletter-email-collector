@@ -8,7 +8,6 @@ import yaml
 from glob import glob
 import calendar
 
-
 GMAIL_USER = 'msreza76@gmail.com'
 GMAIL_PASSWORD = 'Salehi76primarypassword'
 GMAIL = imaplib.IMAP4_SSL('imap.gmail.com', 993)
@@ -16,11 +15,10 @@ GMAIL.login(GMAIL_USER, GMAIL_PASSWORD)
 GMAIL.list()
 GMAIL.select('inbox')
 
-os.makedirs('mails/The Batch', exist_ok=True)
-os.makedirs('mails/TechCrunch Week in Review', exist_ok=True)
-os.makedirs('mails/TechCrunch Startups Weekly', exist_ok=True)
-os.makedirs('mails/The Download MIT', exist_ok=True)
-
+os.makedirs('/Users/mrezasalehi/Desktop/email-assistant/mails/The Batch', exist_ok=True)
+os.makedirs('/Users/mrezasalehi/Desktop/email-assistant/mails/TechCrunch Week in Review', exist_ok=True)
+os.makedirs('/Users/mrezasalehi/Desktop/email-assistant/mails/TechCrunch Startups Weekly', exist_ok=True)
+os.makedirs('/Users/mrezasalehi/Desktop/email-assistant/mails/The Download MIT', exist_ok=True)
 
 NEWSLETTER_IDENTIFIERS = [  # Tuples of identifier key, value of identifier 
     {
@@ -40,10 +38,16 @@ NEWSLETTER_IDENTIFIERS = [  # Tuples of identifier key, value of identifier
         'Dest-folder': 'TechCrunch Startups Weekly'}
     ]
 
+SUGGESTION_PERIODS = [("13:00:00", "13:29:59"), ("18:00:00", "18:29:59")]
+
+
+def get_current_time():
+    now = datetime.now()
+    return now.strftime("%H:%M:%S")
 
 def get_yaml_list():
-    if os.path.exists('mail_list.yaml'):
-        with open('mail_list.yaml') as fptr:
+    if os.path.exists('/Users/mrezasalehi/Desktop/email-assistant/mail_list.yaml'):
+        with open('/Users/mrezasalehi/Desktop/email-assistant/mail_list.yaml') as fptr:
             return yaml.load(fptr, Loader=yaml.FullLoader)
     
     yaml_list = {
@@ -58,7 +62,7 @@ def get_yaml_list():
 
 
 def save_yaml_list(yaml_list):
-    with open('mail_list.yaml', 'w') as fptr:
+    with open('/Users/mrezasalehi/Desktop/email-assistant/mail_list.yaml', 'w') as fptr:
         yaml.dump(yaml_list, fptr)
     
 
@@ -112,7 +116,8 @@ def suggest_reading(yaml_list):
     return None
 
 
-while True:
+def main():
+    print('salam')
     yaml_list = get_yaml_list()
     mails = check_for_new_mails()
 
@@ -123,7 +128,7 @@ while True:
             if identifier['From'] == mail['From']:
                 prefix = identifier.get('Subject-prefix', None)
                 if prefix and subject.startswith(prefix):
-                    with open(os.path.join('mails', identifier['Dest-folder'], subject + '.eml'), 'w') as fp:
+                    with open(os.path.join('/Users/mrezasalehi/Desktop/email-assistant/mails', identifier['Dest-folder'], subject + '.eml'), 'w') as fp:
                         fp.write(str(mail))
                         add_to_yaml_list(
                             yaml_list, 
@@ -132,14 +137,23 @@ while True:
                             subject)
                 
                 elif not prefix:
-                    with open(os.path.join('mails', identifier['Dest-folder'], subject + '.eml'), 'w') as fp:
+                    with open(os.path.join('/Users/mrezasalehi/Desktop/email-assistant/mails', identifier['Dest-folder'], subject + '.eml'), 'w') as fp:
                         fp.write(str(mail))
                         add_to_yaml_list(
                             yaml_list, 
                             identifier['Dest-folder'],
                             f'{datetime.today().day} {calendar.month_name[datetime.today().month]} {datetime.today().year}',
                             subject)
-    
-    publisher, email = suggest_reading(yaml_list)
-    path = os.path.join('mails', publisher.replace(' ', '\ '), email['Subject'].replace(' ', '\ ') + '.eml')
-    os.system("open " + path)
+
+    current_time = get_current_time()
+
+    for (start, end) in SUGGESTION_PERIODS:
+        if start <= current_time <= end:
+            publisher, email = suggest_reading(yaml_list)
+            path = os.path.join('/Users/mrezasalehi/Desktop/email-assistant/mails', publisher.replace(' ', '\ '), email['Subject'].replace(' ', '\ ') + '.eml')
+            os.system("open " + path)
+
+
+
+if __name__ == '__main__':
+    main()
