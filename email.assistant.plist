@@ -6,19 +6,32 @@
     <key>EnvironmentVariables</key>
     <dict>
       <key>PATH</key>
-      <string>/Users/mrezasalehi/.virtualenvs/base/bin:/Users/mrezasalehi/.autojump/bin:/Library/Frameworks/Python.framework/V>
+      <string>/Users/mrezasalehi/.virtualenvs/base/bin:/Users/mrezasalehi/.autojump/bin:/Library/Frameworks/Python.framework/Versions/3.7/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/VMware Fusion.app/Contents/Public:/Library/TeX/texbin:/usr/local/go/bin:/usr/local/MacGPG2/bin:/opt/X11/bin:/Library/Apple/usr/bin:/Applications/Wireshark.app/Contents/MacOS</string>
     </dict>
     <key>Label</key>
     <string>email.assistant</string>
     <key>ProgramArguments</key>
     <array>
     <string>/Users/mrezasalehi/.virtualenvs/base/bin/python</string>
-    <string>/Users/mrezasalehi/Desktop/email-assistant/email_assistant.py</string>
+    <string>/Users/mrezasalehi/email-assistant/email_assistant.py</string>
     </array>
     <key>RunAtLoad</key>
-    <true/>
-    <key>StartInterval</key>
-    <integer>1800</integer>
+    <false/>
+    <key>StartCalendarInterval</key>
+    <array>
+      <dict>
+        <key>Minute</key>
+        <integer>0</integer>
+        <key>Hour</key>
+        <integer>13</integer>
+      </dict>
+      <dict>
+        <key>Minute</key>
+        <integer>0</integer>
+        <key>Hour</key>
+        <integer>18</integer>
+      </dict>
+    </array>
     <key>StandardOutPath</key>
     <string>/tmp/email.assistant.stdout</string>
     <key>StandardErrorPath</key>
@@ -28,4 +41,4 @@
     <key>InitGroups</key>
     <true/>
   </dict>
-</plist
+</plist>

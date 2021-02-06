@@ -43,18 +43,22 @@ NEWSLETTER_IDENTIFIERS = [  # Tuples of identifier key, value of identifier
     ]
 
 for identifier in NEWSLETTER_IDENTIFIERS:
-    os.makedirs(f"/Users/mrezasalehi/Desktop/email-assistant/mails/{identifier['Dest-folder']}", exist_ok=True)
+    os.makedirs(f"/Users/mrezasalehi/email-assistant/mails/{identifier['Dest-folder']}", exist_ok=True)
 
-SUGGESTION_PERIODS = [("13:00:00", "13:29:59"), ("18:00:00", "18:29:59")]
 
+def format_name(subj):
+    subj = subj.replace(' ', '\ ')
+    subj = subj.replace('$', '\$')
+
+    return subj
 
 def get_current_time():
     now = datetime.now()
     return now.strftime("%H:%M:%S")
 
 def get_yaml_list():
-    if os.path.exists('/Users/mrezasalehi/Desktop/email-assistant/mail_list.yaml'):
-        with open('/Users/mrezasalehi/Desktop/email-assistant/mail_list.yaml') as fptr:
+    if os.path.exists('/Users/mrezasalehi/email-assistant/mail_list.yaml'):
+        with open('/Users/mrezasalehi/email-assistant/mail_list.yaml') as fptr:
             return yaml.load(fptr, Loader=yaml.FullLoader)
     
     yaml_list = {
@@ -71,7 +75,7 @@ def get_yaml_list():
 
 
 def save_yaml_list(yaml_list):
-    with open('/Users/mrezasalehi/Desktop/email-assistant/mail_list.yaml', 'w') as fptr:
+    with open('/Users/mrezasalehi/email-assistant/mail_list.yaml', 'w') as fptr:
         yaml.dump(yaml_list, fptr)
     
 
@@ -124,7 +128,7 @@ def suggest_reading(yaml_list):
                 save_yaml_list(yaml_list)
                 return publisher, email
 
-    return None
+    return None, None
 
 
 def main():
@@ -137,7 +141,7 @@ def main():
             if identifier['From'] == mail['From']:
                 prefix = identifier.get('Subject-prefix', None)
                 if prefix and subject.startswith(prefix):
-                    with open(os.path.join('/Users/mrezasalehi/Desktop/email-assistant/mails', identifier['Dest-folder'], subject + '.eml'), 'w') as fp:
+                    with open(os.path.join('/Users/mrezasalehi/email-assistant/mails', identifier['Dest-folder'], subject + '.eml'), 'w') as fp:
                         fp.write(str(mail))
                         add_to_yaml_list(
                             yaml_list, 
@@ -146,7 +150,7 @@ def main():
                             subject)
                 
                 elif not prefix:
-                    with open(os.path.join('/Users/mrezasalehi/Desktop/email-assistant/mails', identifier['Dest-folder'], subject + '.eml'), 'w') as fp:
+                    with open(os.path.join('/Users/mrezasalehi/email-assistant/mails', identifier['Dest-folder'], subject + '.eml'), 'w') as fp:
                         fp.write(str(mail))
                         add_to_yaml_list(
                             yaml_list, 
@@ -156,11 +160,10 @@ def main():
 
     current_time = get_current_time()
 
-    for (start, end) in SUGGESTION_PERIODS:
-        if start <= current_time <= end:
-            publisher, email = suggest_reading(yaml_list)
-            path = os.path.join('/Users/mrezasalehi/Desktop/email-assistant/mails', publisher.replace(' ', '\ '), email['Subject'].replace(' ', '\ ') + '.eml')
-            os.system("open " + path)
+    publisher, email = suggest_reading(yaml_list)
+    if email is not None:
+        path = os.path.join('/Users/mrezasalehi/email-assistant/mails', format_name(publisher), format_name(email['Subject']) + '.eml')
+        os.system("open " + path)
 
 
 
