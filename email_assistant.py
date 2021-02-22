@@ -9,10 +9,11 @@ from glob import glob
 import calendar
 from numpy.random import permutation
 
-GMAIL_USER = 'msreza76@gmail.com'
-GMAIL_PASSWORD = 'Salehi76primarypassword'
+with open('credentials.yaml') as f:
+    credentials = yaml.load(f, Loader=yaml.FullLoader)
+
 GMAIL = imaplib.IMAP4_SSL('imap.gmail.com', 993)
-GMAIL.login(GMAIL_USER, GMAIL_PASSWORD)
+GMAIL.login(credentials['GMAIL_USER'], credentials['GMAIL_PASSWORD'])
 GMAIL.list()
 GMAIL.select('inbox')
 
