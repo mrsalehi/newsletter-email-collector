@@ -19,30 +19,8 @@ GMAIL.list()
 GMAIL.select('inbox')
 
 
-NEWSLETTER_IDENTIFIERS = [  # Tuples of identifier key, value of identifier 
-    {
-        'From': 'TechCrunch <newsletter@techcrunch.com>', 
-        'Subject-prefix': 'Week in Review', 
-        'Dest-folder': 'TechCrunch Week in Review'}, 
-    {
-        'From': '"DeepLearning.AI" <thebatch@deeplearning.ai>', 
-        'Subject-prefix': 'The Batch', 
-        'Dest-folder': 'The Batch'},
-    {
-        'From': '=?utf-8?Q?The=20Download=20from=20MIT=20Technology=20Review?= <newsletters@technologyreview.com>', 
-        'Dest-folder': 'The Download MIT'},
-    {
-        'From': 'TechCrunch <newsletter@techcrunch.com>',
-        'Subject-prefix': 'Startups Weekly',
-        'Dest-folder': 'TechCrunch Startups Weekly'},
-    {
-        'From': '"Artificial Intelligence Weekly" <hello@faveeo.com>',
-        'Subject-prefix': 'AI News Weekly',
-        'Dest-folder': 'AI News Weekly'},
-    {
-        'From': "=?utf-8?Q?Deep=20Learning=20Weekly?= <deeplearningweekly@gmail.com>",
-        'Dest-folder': 'Deep Learning Weekly'}
-    ]
+with open('newsletter-providers.yaml', 'r') as fptr:
+    NEWSLETTER_IDENTIFIERS = yaml.load(fptr, Loader=yaml.FullLoader)
 
 for identifier in NEWSLETTER_IDENTIFIERS:
     os.makedirs(f"/Users/mrezasalehi/email-assistant/mails/{identifier['Dest-folder']}", exist_ok=True)
