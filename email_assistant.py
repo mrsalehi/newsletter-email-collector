@@ -8,12 +8,13 @@ import yaml
 from glob import glob
 import calendar
 from numpy.random import permutation
+from decouple import config
 
-with open('credentials.yaml') as f:
-    credentials = yaml.load(f, Loader=yaml.FullLoader)
+GMAIL_USER = config('GMAIL_USER')
+GMAIL_PASSWORD = config('GMAIL_PASSWORD')
 
 GMAIL = imaplib.IMAP4_SSL('imap.gmail.com', 993)
-GMAIL.login(credentials['GMAIL_USER'], credentials['GMAIL_PASSWORD'])
+GMAIL.login(GMAIL_USER, GMAIL_PASSWORD)
 GMAIL.list()
 GMAIL.select('inbox')
 
