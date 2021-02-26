@@ -25,3 +25,7 @@
 -
   From: "=?utf-8?Q?Deep=20Learning=20Weekly?= <deeplearningweekly@gmail.com>"
   Dest-folder: 'Deep Learning Weekly'
+
+-
+  From: 'NVIDIA Developer <news@nvidia.com>'
+  Dest-folder: 'NVIDIA Developer'
