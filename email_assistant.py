@@ -19,7 +19,7 @@ GMAIL.list()
 GMAIL.select('inbox')
 
 
-with open('newsletter-providers.yaml', 'r') as fptr:
+with open('/Users/mrezasalehi/email-assistant/newsletter-providers.yaml', 'r') as fptr:
     NEWSLETTER_IDENTIFIERS = yaml.load(fptr, Loader=yaml.FullLoader)
 
 for identifier in NEWSLETTER_IDENTIFIERS:
@@ -32,9 +32,17 @@ def format_name(subj):
 
     return subj
 
+
+def format_date(date_str):
+    day, month, year = date_str.split()
+
+    return day + '-' + month[:3] + '-' + year
+
+
 def get_current_time():
     now = datetime.now()
     return now.strftime("%H:%M:%S")
+
 
 def get_yaml_list():
     if os.path.exists('/Users/mrezasalehi/email-assistant/mail_list.yaml'):
@@ -117,11 +125,16 @@ def main():
 
     for mail in mails:
         subject = mail['Subject']
+        date = '-'.join(mail['Date'].split()[1:4])
+
+        if date.startswith('0'):
+            date = date[1:]
+
         for identifier in NEWSLETTER_IDENTIFIERS:
             if identifier['From'] == mail['From']:
                 prefix = identifier.get('Subject-prefix', None)
                 if prefix and subject.startswith(prefix):
-                    with open(os.path.join('/Users/mrezasalehi/email-assistant/mails', identifier['Dest-folder'], subject + '.eml'), 'w') as fp:
+                    with open(os.path.join('/Users/mrezasalehi/email-assistant/mails', identifier['Dest-folder'], date + '.eml'), 'w') as fp:
                         fp.write(str(mail))
                         add_to_yaml_list(
                             yaml_list, 
@@ -130,7 +143,7 @@ def main():
                             subject)
                 
                 elif not prefix:
-                    with open(os.path.join('/Users/mrezasalehi/email-assistant/mails', identifier['Dest-folder'], subject + '.eml'), 'w') as fp:
+                    with open(os.path.join('/Users/mrezasalehi/email-assistant/mails', identifier['Dest-folder'], date + '.eml'), 'w') as fp:
                         fp.write(str(mail))
                         add_to_yaml_list(
                             yaml_list, 
@@ -142,7 +155,7 @@ def main():
 
     publisher, email = suggest_reading(yaml_list)
     if email is not None:
-        path = os.path.join('/Users/mrezasalehi/email-assistant/mails', format_name(publisher), format_name(email['Subject']) + '.eml')
+        path = os.path.join('/Users/mrezasalehi/email-assistant/mails', format_name(publisher), format_date(email['Date']) + '.eml')
         os.system("open " + path)
 
 
