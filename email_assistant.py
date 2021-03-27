@@ -17,6 +17,7 @@ GMAIL = imaplib.IMAP4_SSL('imap.gmail.com', 993)
 GMAIL.login(GMAIL_USER, GMAIL_PASSWORD)
 GMAIL.list()
 GMAIL.select('inbox')
+MONTH_NAME_2_NUMBER = {calendar.month_name[number]: number for number in range(1, 13)}
 
 
 with open('/Users/mrezasalehi/email-assistant/newsletter-providers.yaml', 'r') as fptr:
@@ -55,7 +56,8 @@ def get_yaml_list():
         'TechCrunch Week in Review': [],
         'The Download MIT': [],
         'AI News Weekly': [],
-        'Deep Learning Weekly': []}
+        'Deep Learning Weekly': [],
+        'NVIDIA Developer': []}
     
     save_yaml_list(yaml_list)
 
@@ -110,11 +112,23 @@ def suggest_reading(yaml_list):
     publishers = [k for k in yaml_list]
 
     for publisher in permutation(publishers):
+        earliest_datetime, earliest_email = None, None
         for email in permutation(yaml_list[publisher]):
             if not email['read']:
-                email['read'] = True
-                save_yaml_list(yaml_list)
-                return publisher, email
+                date, month_name, year = email['Date'].split(' ')
+                email_datetime = datetime(year, MONTH_NAME_2_NUMBER[month_name], date) 
+
+                if earliest_datetime is None:
+                    earliest_datetime = email_datetime
+                    earliest_email = email
+                elif email_datetime < earliest_datetime:
+                    earliest_datetime = email_datetime
+                    earliest_email = email
+                
+        if earliest_email:
+            earliest_email['read'] = True        
+            save_yaml_list(yaml_list)
+            return publisher, earliest_email
 
     return None, None
 
