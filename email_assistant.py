@@ -19,6 +19,37 @@ GMAIL.list()
 GMAIL.select('inbox')
 MONTH_NAME_2_NUMBER = {calendar.month_name[number]: number for number in range(1, 13)}
 
+MONTH_ABBRVS = {
+    'Jan': ['jan', 'january'],
+    'Feb': ['feb', 'february'],
+    'Mar': ['mar', 'march'],
+    'Apr': ['apr', 'april'],
+    'May': ['may'],
+    'Jun': ['jun', 'june'],
+    'Jul': ['jul', 'july'],
+    'Aug': ['aug', 'august'],
+    'Sep': ['sep', 'september'],
+    'Oct': ['oc', 'oct', 'october'],
+    'Nov': ['nv', 'nov', 'november'],
+    'Dec': ['dec', 'december']
+    }
+
+
+ABBRV_2_NUMBER = {
+    'Jan': 1,
+    'Feb': 2,
+    'Mar': 3,
+    'Apr': 4,
+    'May': 5,
+    'Jun': 6,
+    'Jul': 7,
+    'Aug': 8,
+    'Sep': 9,
+    'Oct': 10,
+    'Nov': 11,
+    'Dec': 12
+}
+
 
 with open('/Users/mrezasalehi/email-assistant/newsletter-providers.yaml', 'r') as fptr:
     NEWSLETTER_IDENTIFIERS = yaml.load(fptr, Loader=yaml.FullLoader)
@@ -34,10 +65,20 @@ def format_name(subj):
     return subj
 
 
-def format_date(date_str):
-    day, month, year = date_str.split()
+def format_email_date(date):
+    date, month, year = date.split()[1:4]
 
-    return day + '-' + month[:3] + '-' + year
+    if len(date) == 1:
+        date = '0' + date
+
+    month = month.lower() 
+
+    for k, v in MONTH_ABBRVS.items():
+        if month in v:
+            month = k
+            break
+
+    return date + '-' + month + '-' + year
 
 
 def get_current_time():
@@ -113,10 +154,12 @@ def suggest_reading(yaml_list):
 
     for publisher in permutation(publishers):
         earliest_datetime, earliest_email = None, None
+        print(publisher)
         for email in permutation(yaml_list[publisher]):
             if not email['read']:
-                date, month_name, year = email['Date'].split(' ')
-                email_datetime = datetime(year, MONTH_NAME_2_NUMBER[month_name], date) 
+                print(email['Date'])
+                date, month_abbrv, year = email['Date'].split('-')
+                email_datetime = datetime(int(year), ABBRV_2_NUMBER[month_abbrv], int(date)) 
 
                 if earliest_datetime is None:
                     earliest_datetime = email_datetime
@@ -139,10 +182,7 @@ def main():
 
     for mail in mails:
         subject = mail['Subject']
-        date = '-'.join(mail['Date'].split()[1:4])
-
-        if date.startswith('0'):
-            date = date[1:]
+        date = format_email_date(mail['Date'])  # date with format dd-mmm-year
 
         for identifier in NEWSLETTER_IDENTIFIERS:
             if identifier['From'] == mail['From']:
@@ -153,7 +193,7 @@ def main():
                         add_to_yaml_list(
                             yaml_list, 
                             identifier['Dest-folder'],
-                            f'{datetime.today().day} {calendar.month_name[datetime.today().month]} {datetime.today().year}',
+                            date,
                             subject)
                 
                 elif not prefix:
@@ -162,14 +202,13 @@ def main():
                         add_to_yaml_list(
                             yaml_list, 
                             identifier['Dest-folder'],
-                            f'{datetime.today().day} {calendar.month_name[datetime.today().month]} {datetime.today().year}',
+                            date,
                             subject)
 
-    current_time = get_current_time()
 
     publisher, email = suggest_reading(yaml_list)
     if email is not None:
-        path = os.path.join('/Users/mrezasalehi/email-assistant/mails', format_name(publisher), format_date(email['Date']) + '.eml')
+        path = os.path.join('/Users/mrezasalehi/email-assistant/mails', format_name(publisher), email['Date'] + '.eml')
         os.system("open " + path)
 
 
